@@ -36,21 +36,18 @@ function insertTable(table, tag, value) {
 
 
 function main() {
-    console.log("gmail source loaded");
     let rawEmail = document.getElementById("raw_message_text").innerHTML;
     let parsed = mailParser(rawEmail);
-    console.table(parsed);
+    // console.table(parsed);
 
     const table = document.querySelector(".top-area table tbody");
     const ibeDecrypted = "Ibemail-Decrypted"
     const ibeVerify = "IBE-Verify"
 
     if (parsed[ibeDecrypted] && parsed[ibeDecrypted].length === 1) {
-        // console.log("Decrypt:", parsed["Ibemail-Decrypted"][0]);
         insertTable(table, ibeDecrypted, parsed[ibeDecrypted][0]);
     }
     if (parsed[ibeVerify] && parsed[ibeVerify].length === 1) {
-        // console.log("Verify:", parsed["IBE-Verify"][0]);
         insertTable(table, ibeVerify, parsed[ibeVerify][0]);
     }
 }
