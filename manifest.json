@@ -1,0 +1,16 @@
+{
+  "name": "Sample-Extension",
+  "version": "1.0.0",
+  "manifest_version": 2,
+  "description": "Sample Chrome Extension",
+  "content_scripts": [
+    {
+      "matches": [
+        "https://mail.google.com/mail/u/0/?ik=*"
+      ],
+      "js": [
+        "js/sample.js"
+      ]
+    }
+  ]
+}
