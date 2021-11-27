@@ -21,6 +21,7 @@ function mailParser(email) {
     return headerList;
 }
 
+
 function insertTable(table, tag, value) {
     let tr = document.createElement("tr");
     table.appendChild(tr);
@@ -34,11 +35,39 @@ function insertTable(table, tag, value) {
     tr.appendChild(td);
 }
 
+function getThreadIdList() {
+    let threadIdList = [];
+    if (document.querySelectorAll("table") !== null) {
+        tbody = document.querySelectorAll("tbody");
+        for (let ele of tbody) {
+            let span = ele.querySelectorAll("span");
+            for (let ele2 of span) {
+                if (ele2.hasAttribute("data-thread-id")) {
+                    let threadId = ele2.getAttribute("data-thread-id");
+                    if (threadIdList.indexOf(threadId) === -1) {
+                        threadIdList.push(threadId);
+                    }
+                }
+            }
+        }
+    }
+    return threadIdList;
+}
 
-function main() {
+function inbox() {
+    function isLoaded() {
+        let threadIdList = getThreadIdList();
+        console.log(threadIdList);
+    }
+    // not good implement
+    setTimeout(isLoaded, 1000);
+}
+
+
+function origMsg() {
+    // insert decrypt and verify results
     let rawEmail = document.getElementById("raw_message_text").innerHTML;
     let parsed = mailParser(rawEmail);
-    // console.table(parsed);
 
     const table = document.querySelector(".top-area table tbody");
     const ibeDecrypted = "Ibemail-Decrypted"
@@ -52,4 +81,17 @@ function main() {
     }
 }
 
+function main() {
+    if (document.URL.match(/https:\/\/mail\.google\.com\/mail\/u\/0\/#inbox.*/)) {
+        // inbox
+        inbox();
+    } else if (document.URL.match(/https:\/\/mail\.google\.com\/mail\/u\/0\/\?ik=.+/)) {
+        // view mail source
+        origMsg();
+    }
+}
+
 main();
+
+// https://mail.google.com/mail/u/0/?ik={GM_ID}&view=om&permmsgid=msg-f%3A{\d}
+// span data-threadid="#thread-f:{\d}" ここでthreadIDを取得
