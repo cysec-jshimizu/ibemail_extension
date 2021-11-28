@@ -35,6 +35,22 @@ function insertTable(table, tag, value) {
     tr.appendChild(td);
 }
 
+
+function getGmId() {
+    let gmId = "";
+    let scr = document.querySelectorAll("script");
+    for (let ele of scr) {
+        if (ele.hasAttribute("nonce") && ele.innerHTML.startsWith("\n_GM_setData")) {
+            let script = ele.innerHTML
+            let obj = JSON.parse(script.substring(script.indexOf("(") + 1, script.lastIndexOf(")")));
+            gmId = obj[Object.keys(obj)[0]][2];
+        }
+    }
+
+    return gmId;
+}
+
+
 function getThreadIdList() {
     let threadIdList = [];
     if (document.querySelectorAll("table") !== null) {
@@ -54,13 +70,54 @@ function getThreadIdList() {
     return threadIdList;
 }
 
+function getEmail(url) {
+    return fetch(url)
+        .then(res => {
+            if (res.status !== 200) {
+                console.warn(res.status);
+            }
+            return res.text();
+        })
+        .then(text => {
+            return new DOMParser().parseFromString(text, "text/html");
+        })
+        .then(
+            html => {
+                let rawEmail = "";
+                try {
+                    rawEmail = html.getElementById("raw_message_text").innerHTML;
+                } catch (e) {
+                    console.error(e);
+
+                }
+                return rawEmail
+            }
+        )
+
+}
+
+
 function inbox() {
     function isLoaded() {
         let threadIdList = getThreadIdList();
-        console.log(threadIdList);
+        let gmId = getGmId();
+        for (let threadId of threadIdList) {
+            let mailUrl = `https://mail.google.com/mail/u/0/?ik=${gmId}&view=om&permmsgid=msg-${threadId.substr(8)}`;
+            getEmail(mailUrl)
+                .then(raw => {
+                    if (raw === "") {
+                        throw "empty string"
+                    }
+                    return mailParser(raw);
+                })
+                .then(parsed => {
+                    console.log(parsed["From"][0], parsed["IBE-Verify"]);
+                })
+                .catch(e => console.log(e));
+        }
     }
     // not good implement
-    setTimeout(isLoaded, 1000);
+    setTimeout(isLoaded, 2000);
 }
 
 
@@ -86,12 +143,9 @@ function main() {
         // inbox
         inbox();
     } else if (document.URL.match(/https:\/\/mail\.google\.com\/mail\/u\/0\/\?ik=.+/)) {
-        // view mail source
+        // view email source
         origMsg();
     }
 }
 
 main();
-
-// https://mail.google.com/mail/u/0/?ik={GM_ID}&view=om&permmsgid=msg-f%3A{\d}
-// span data-threadid="#thread-f:{\d}" ここでthreadIDを取得
