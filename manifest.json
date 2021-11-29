@@ -9,6 +9,8 @@
         "https://mail.google.com/mail/u/0/*"
       ],
       "js": [
+        "js/inbox.js",
+        "js/email.js",
         "js/sample.js"
       ]
     }
