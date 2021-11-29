@@ -11,7 +11,7 @@
       "js": [
         "js/inbox.js",
         "js/email.js",
-        "js/sample.js"
+        "js/main.js"
       ]
     }
   ]
