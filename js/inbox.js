@@ -17,26 +17,27 @@ function getGmId() {
 }
 
 
-function getThreadIdList() {
+function getThreadList() {
     /**
-     * @returns {[string]} thraedIdList - #thread-f:1234567890
+     * @returns {[string]} thraedList - #thread-f:1234567890
      */
-    let threadIdList = [];
+    let threadList = [];
     if (document.querySelectorAll("table") !== null) {
-        tbody = document.querySelectorAll("tbody");
+        let tbody = document.querySelectorAll("tbody");
         for (let ele of tbody) {
             let span = ele.querySelectorAll("span");
             for (let ele2 of span) {
                 if (ele2.hasAttribute("data-thread-id")) {
                     let threadId = ele2.getAttribute("data-thread-id");
-                    if (threadIdList.indexOf(threadId) === -1) {
-                        threadIdList.push(threadId);
+                    let thraedEle = ele2.parentElement.parentElement.parentElement;
+                    if (threadList.filter(temp => temp[0] === threadId).length === 0) {
+                        threadList.push([threadId, thraedEle]);
                     }
                 }
             }
         }
     }
-    return threadIdList;
+    return threadList;
 }
 
 function getEmail(url) {
@@ -74,10 +75,10 @@ function getEmail(url) {
 function inbox() {
     // show ibe result at #inbox
     function isLoaded() {
-        let threadIdList = getThreadIdList();
+        let threadList = getThreadList();
         let gmId = getGmId();
-        for (let threadId of threadIdList) {
-            let mailUrl = `https://mail.google.com/mail/u/0/?ik=${gmId}&view=om&permmsgid=msg-${threadId.substr(8)}`;
+        for (let thread of threadList) {
+            let mailUrl = `https://mail.google.com/mail/u/0/?ik=${gmId}&view=om&permmsgid=msg-${thread[0].substr(8)}`;
             getEmail(mailUrl)
                 .then(raw => {
                     if (raw === "") {
@@ -86,10 +87,14 @@ function inbox() {
                     return mailParser(raw);
                 })
                 .then(parsed => {
-                    console.log(parsed["From"][0]);
+                    console.log(parsed["Subject"][0]);
                     if (parsed["IBE-Verify"]) {
-                        // console.log(parsed["IBE-Verify"][0] === "ok");
-                        console.log(threadId);
+                        if (parsed["IBE-Verify"].length === 1 && parsed["IBE-Verify"][0] === "ok") {
+                            console.log(parsed["IBE-Verify"][0] === "ok");
+                            thread[1].style.backgroundColor = "green";
+                        } else {
+                            thread[1].style.backgroundColor = "red";
+                        }
                     }
                 })
                 .catch(e => console.log(e));
