@@ -63,7 +63,7 @@ function getEmail(url) {
                 try {
                     rawEmail = html.getElementById("raw_message_text").innerHTML;
                 } catch (e) {
-                    console.error(e);
+                    // console.error(e);
                 }
                 return rawEmail
             }
@@ -87,17 +87,17 @@ function inbox() {
                     return mailParser(raw);
                 })
                 .then(parsed => {
-                    console.log(parsed["Subject"][0]);
+                    // console.log(parsed["Subject"][0]);
                     if (parsed["IBE-Verify"]) {
                         if (parsed["IBE-Verify"].length === 1 && parsed["IBE-Verify"][0] === "ok") {
-                            console.log(parsed["IBE-Verify"][0] === "ok");
                             thread[1].style.backgroundColor = "green";
                         } else {
+                            console.warn("failed to verify");
                             thread[1].style.backgroundColor = "red";
                         }
                     }
                 })
-                .catch(e => console.log(e));
+                .catch(e => console.error(e));
         }
     }
     // not good implement
