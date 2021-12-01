@@ -66,14 +66,26 @@ function inbox() {
     for (let thread of threadList) {
       let mailUrl = `https://mail.google.com/mail/u/0/?ik=${gmId}&view=om&permmsgid=msg-${thread.id.substr(8)}`;
       getEmail(mailUrl)
-        .then((raw: string) => {
+        .then((raw: string): EmailHeader => {
+          let parsedHeader: EmailHeader;
           if (raw === "") {
-            throw "failed to get source of email";
+            // fetch again after 3 seconds
+            setTimeout(() => {
+              getEmail(mailUrl).then((raw) => {
+                if (raw == "") {
+                  console.log(thread.id);
+                  thread.ele.style.backgroundColor = "yellow";
+                  throw new Error(`failed to get source of email(${mailUrl})`);
+                } else {
+                  parsedHeader = mailParser(raw);
+                }
+              });
+            }, 3000);
           }
-          return mailParser(raw);
+          parsedHeader = mailParser(raw);
+          return parsedHeader;
         })
         .then((parsed: EmailHeader) => {
-          // console.log(parsed["Subject"][0]);
           if (parsed["IBE-Verify"]) {
             if (parsed["IBE-Verify"].length === 1 && parsed["IBE-Verify"][0] === "ok") {
               thread.ele.style.backgroundColor = "green";
@@ -83,7 +95,7 @@ function inbox() {
             }
           }
         })
-        .catch((e) => console.error(e));
+        .catch((e: Error) => console.error(e));
     }
   }
   // not good implement
