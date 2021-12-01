@@ -1,0 +1,23 @@
+{
+  "name": "ibemail_extension",
+  "version": "1.0.0",
+  "description": "This is a browser extension which shows IBE results in gmail client",
+  "scripts": {
+    "watch": "webpack --config webpack/webpack.dev.js --watch",
+    "build": "webpack --config webpack/webpack.prod.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cysec-jshimizu/ibemail_extension.git"
+  },
+  "author": "",
+  "bugs": {
+    "url": "https://github.com/cysec-jshimizu/ibemail_extension/issues"
+  },
+  "homepage": "https://github.com/cysec-jshimizu/ibemail_extension#readme",
+  "devDependencies": {
+    "copy-webpack-plugin": "^10.0.0",
+    "webpack": "^5.64.4",
+    "webpack-cli": "^4.9.1"
+  }
+}

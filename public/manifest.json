@@ -1,16 +1,14 @@
 {
-  "name": "Sample-Extension",
-  "version": "1.0.0",
+  "name": "IBE for Gmail",
+  "version": "1.0.1",
   "manifest_version": 2,
-  "description": "Sample Chrome Extension",
+  "description": "show IBE results in gmail client",
   "content_scripts": [
     {
       "matches": [
         "https://mail.google.com/mail/u/0/*"
       ],
       "js": [
-        "js/inbox.js",
-        "js/email.js",
         "js/main.js"
       ]
     }

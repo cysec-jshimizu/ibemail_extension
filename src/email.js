@@ -12,7 +12,7 @@ function mailParser(email) {
         if (line[0] === " ") {
             revHeader[index + 1] += line.trim();
         } else {
-            colon = line.indexOf(":");
+            let colon = line.indexOf(":");
             let tag = line.substr(0, colon);
             let content = line.substr(colon + 2);
             if (headerList[tag]) {
@@ -62,3 +62,6 @@ function showIbeResult() {
         insertTable(table, ibeVerify, parsed[ibeVerify][0]);
     }
 }
+
+
+export { mailParser, showIbeResult }

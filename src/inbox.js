@@ -1,3 +1,5 @@
+import { mailParser } from "./email"
+
 function getGmId() {
     /**
      * returns gmID which exsits in script tag
@@ -104,3 +106,4 @@ function inbox() {
     setTimeout(isLoaded, 2000);
 }
 
+export { inbox }
