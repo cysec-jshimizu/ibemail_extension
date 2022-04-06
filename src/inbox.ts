@@ -9,7 +9,11 @@ function getGmId(): string {
       let script: string = ele.innerHTML;
       let obj: GmSetdata = JSON.parse(script.substring(script.indexOf("(") + 1, script.lastIndexOf(")")));
 
-      gmId = obj[Object.keys(obj)[0]][2];
+      Object.keys(obj).forEach((a) => {
+        if (Array.isArray(obj[a])) {
+          gmId = obj[a][2];
+        }
+      })
     }
   });
 
@@ -72,9 +76,9 @@ function inbox() {
             // fetch again after 3 seconds
             setTimeout(() => {
               getEmail(mailUrl).then((raw) => {
-                if (raw == "") {
-                  console.log(thread.id);
-                  thread.ele.style.backgroundColor = "yellow";
+                if (raw === "") {
+                  // console.log(thread.id);
+                  // thread.ele.style.backgroundColor = "yellow";
                   throw new Error(`failed to get source of email(${mailUrl})`);
                 } else {
                   parsedHeader = mailParser(raw);
@@ -92,6 +96,13 @@ function inbox() {
             } else {
               console.warn("failed to verify");
               thread.ele.style.backgroundColor = "red";
+            }
+          }
+          if (parsed["Ibemail-Decrypted"]) {
+            if (parsed["Ibemail-Decrypted"][0] === "true") {
+              // console.log("dec ok");
+            } else {
+              // console.log("dec failed");
             }
           }
         })

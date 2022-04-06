@@ -8,11 +8,14 @@ module.exports = {
         filename: '[name].js'
     },
     resolve: {
+        modules: [path.resolve(__dirname, "src"), "node_modules"],
         extensions: [".ts", ".js"],
     },
     module: {
         rules: [
             {
+                test: /.ts$/,
+                exclude: /node_modules/,
                 use: 'ts-loader'
             }
         ]
