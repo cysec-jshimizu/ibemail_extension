@@ -5,10 +5,14 @@ import { resolve } from "./dns";
 function main() {
   resolve("__ibemailkey.jshimizu.dev", "TXT");
 
-  if (document.URL.match(/https:\/\/mail\.google\.com\/mail\/u\/0\/[\w]*#inbox[\w]*?/)) {
-    inbox();
-  } else if (document.URL.match(/https:\/\/mail\.google\.com\/mail\/u\/0\/\?ik=.+/)) {
-    showIbeResult();
+  let url: URL = new URL(document.URL);
+  let params: URLSearchParams = url.searchParams;
+  if (url.origin + url.pathname === "https://mail.google.com/mail/u/0/") {
+    if (url.hash === "#inbox") {
+      inbox();
+    } else if (params.get("permmsgid") && params.get("ik") && params.get("view")) {
+      showIbeResult();
+    }
   }
 }
 
