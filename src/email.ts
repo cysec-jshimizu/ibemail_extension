@@ -1,5 +1,5 @@
 function mailParser(email: string): EmailHeader {
-  let headerStr: string = email.substr(0, email.indexOf("\n\n"));
+  let headerStr: string = email.substring(0, email.indexOf("\n\n"));
   let headerList: EmailHeader = {};
   let revHeader: string[] = headerStr.split("\n").reverse();
 
@@ -8,8 +8,8 @@ function mailParser(email: string): EmailHeader {
       revHeader[index + 1] += line.trim();
     } else {
       let colon: number = line.indexOf(":");
-      let tag: string = line.substr(0, colon);
-      let content: string = line.substr(colon + 2);
+      let tag: string = line.substring(0, colon);
+      let content: string = line.substring(colon + 2);
       if (headerList[tag]) {
         headerList[tag].push(content);
       } else {
@@ -21,6 +21,7 @@ function mailParser(email: string): EmailHeader {
   return headerList;
 }
 
+// add row in email source page
 function insertTable(table: Element, tag: string, value: string) {
   let tr: HTMLTableRowElement = document.createElement("tr");
   table.appendChild(tr);
