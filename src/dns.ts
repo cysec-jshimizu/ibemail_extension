@@ -1,5 +1,6 @@
 function resolve(domain: string, type: string) {
-  let url: string = `https://dns.google.com/resolve?name=${domain}&type=${type}`;
+  let ibeDomain: string = "__ibemailkey." + domain;
+  let url: string = `https://dns.google.com/resolve?name=${ibeDomain}&type=${type}`;
   let iberecord: { [key: string]: string } = {};
 
   fetch(url)
@@ -11,7 +12,7 @@ function resolve(domain: string, type: string) {
           iberecord[splitted[0]] = splitted[1];
         }
       }
-      let keys = Object.keys(iberecord);
+      let keys: string[] = Object.keys(iberecord);
       if (keys.includes("ver") && keys.includes("date") && keys.includes("key")) {
         console.log(`${domain} supports IBE.`);
         // alert(`${domain} supports IBE.`)

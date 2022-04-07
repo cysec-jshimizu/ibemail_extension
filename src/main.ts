@@ -3,7 +3,7 @@ import { inbox } from "./inbox";
 import { resolve } from "./dns";
 
 function main() {
-  resolve("__ibemailkey.jshimizu.dev", "TXT");
+  resolve("jshimizu.dev", "TXT");
 
   let url: URL = new URL(document.URL);
   let params: URLSearchParams = url.searchParams;
