@@ -3,8 +3,8 @@ import { mailParser } from "./email";
 function getGmId(): string {
   // returns gmID which exsits in script tag
   let gmId: string = "";
-  const scripts = document.querySelectorAll<HTMLInputElement>("script");
-  scripts.forEach((ele) => {
+  const scripts: NodeListOf<HTMLInputElement> = document.querySelectorAll<HTMLInputElement>("script");
+  scripts.forEach((ele: HTMLInputElement) => {
     if (ele.hasAttribute("nonce") && ele.innerHTML.startsWith("\n_GM_setData")) {
       let script: string = ele.innerHTML;
       let obj: GmSetdata = JSON.parse(script.substring(script.indexOf("(") + 1, script.lastIndexOf(")")));
@@ -23,14 +23,14 @@ function getGmId(): string {
 function getThreadList(): EmailThread[] {
   let threadList: EmailThread[] = [];
   if (document.querySelectorAll("table") !== null) {
-    let tbody = document.querySelectorAll<HTMLInputElement>("tbody");
-    tbody.forEach((ele) => {
-      let span = ele.querySelectorAll<HTMLInputElement>("span");
-      span.forEach((ele2) => {
+    let tbody: NodeListOf<HTMLInputElement> = document.querySelectorAll<HTMLInputElement>("tbody");
+    tbody.forEach((ele: HTMLInputElement) => {
+      let span: NodeListOf<HTMLInputElement> = ele.querySelectorAll<HTMLInputElement>("span");
+      span.forEach((ele2: HTMLInputElement) => {
         if (ele2.hasAttribute("data-thread-id")) {
           let threadId: string = ele2.getAttribute("data-thread-id")!;
           let thraedEle: HTMLElement = ele2.parentElement!.parentElement!.parentElement!;
-          if (threadList.filter((temp) => temp.id === threadId).length === 0) {
+          if (threadList.filter((temp: EmailThread) => temp.id === threadId).length === 0) {
             threadList.push({ id: threadId, ele: thraedEle });
           }
         }
@@ -42,16 +42,16 @@ function getThreadList(): EmailThread[] {
 
 function getEmail(url: string): Promise<string> {
   return fetch(url)
-    .then((res) => {
+    .then((res: Response) => {
       if (res.status !== 200) {
         console.warn(res.status);
       }
       return res.text();
     })
-    .then((text) => {
+    .then((text: string) => {
       return new DOMParser().parseFromString(text, "text/html");
     })
-    .then((html) => {
+    .then((html: Document) => {
       let rawEmail: string = "";
       try {
         rawEmail = html.getElementById("raw_message_text")!.innerHTML;
@@ -66,9 +66,11 @@ function inbox() {
   // show ibe result at #inbox
   function isLoaded() {
     let threadList: EmailThread[] = getThreadList();
+    console.log(threadList.length);
+
     let gmId: string = getGmId();
     for (let thread of threadList) {
-      let mailUrl = `https://mail.google.com/mail/u/0/?ik=${gmId}&view=om&permmsgid=msg-${thread.id.substr(8)}`;
+      let mailUrl: string = `https://mail.google.com/mail/u/0/?ik=${gmId}&view=om&permmsgid=msg-${thread.id.substring(8)}`;
       getEmail(mailUrl)
         .then((raw: string): EmailHeader => {
           let parsedHeader: EmailHeader;
