@@ -3,9 +3,9 @@ import { mailParser } from "./email";
 function getGmId(): string {
   // returns gmID which exsits in script tag
   let gmId: string = "";
-  const scripts: NodeListOf<HTMLInputElement> = document.querySelectorAll<HTMLInputElement>("script");
+  const scripts: NodeListOf<HTMLInputElement> = document.querySelectorAll<HTMLInputElement>("script[nonce]");
   scripts.forEach((ele: HTMLInputElement) => {
-    if (ele.hasAttribute("nonce") && ele.innerHTML.startsWith("\n_GM_setData")) {
+    if (ele.innerHTML.startsWith("\n_GM_setData")) {
       let script: string = ele.innerHTML;
       let obj: GmSetdata = JSON.parse(script.substring(script.indexOf("(") + 1, script.lastIndexOf(")")));
 
@@ -18,6 +18,16 @@ function getGmId(): string {
   });
 
   return gmId;
+}
+
+function getThradId(): string {
+  // in mail, get thread id
+  let h2: NodeListOf<HTMLInputElement> = document.querySelectorAll<HTMLInputElement>("h2[data-thread-perm-id]");
+  let threadid: string = "";
+  h2.forEach((ele: HTMLInputElement) => {
+    threadid = ele.getAttribute("data-thread-perm-id")!;
+  });
+  return threadid;
 }
 
 function getThreadList(): EmailThread[] {
@@ -62,12 +72,27 @@ function getEmail(url: string): Promise<string> {
     });
 }
 
+function inMail() {
+  let tid = getThradId();
+  let gmId: string = getGmId();
+  let u = `https://mail.google.com/mail/u/0/?ik=${gmId}&view=om&permmsgid=msg-${tid.substring(7)}`;
+
+  getEmail(u).then((raw: string) => {
+    let parsedHeader: EmailHeader = mailParser(raw);
+    return parsedHeader;
+  }).then((parsed: EmailHeader) => {
+    if (parsed["IBE-Verify"]) {
+      console.log(parsed["IBE-Verify"][0]);
+    } else {
+      console.log("no sign");
+    }
+  })
+};
+
 function inbox() {
   // show ibe result at #inbox
   function isLoaded() {
     let threadList: EmailThread[] = getThreadList();
-    console.log(threadList.length);
-
     let gmId: string = getGmId();
     for (let thread of threadList) {
       let mailUrl: string = `https://mail.google.com/mail/u/0/?ik=${gmId}&view=om&permmsgid=msg-${thread.id.substring(8)}`;
@@ -80,7 +105,7 @@ function inbox() {
               getEmail(mailUrl).then((raw) => {
                 if (raw === "") {
                   // console.log(thread.id);
-                  // thread.ele.style.backgroundColor = "yellow";
+                  thread.ele.style.backgroundColor = "yellow";
                   throw new Error(`failed to get source of email(${mailUrl})`);
                 } else {
                   parsedHeader = mailParser(raw);
@@ -115,4 +140,4 @@ function inbox() {
   setTimeout(isLoaded, 2000);
 }
 
-export { inbox };
+export { inbox, inMail };
